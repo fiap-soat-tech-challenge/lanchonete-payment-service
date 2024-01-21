@@ -1,7 +1,6 @@
 import { StatusPagamento } from '../domain/model/status-pagamento';
 import { PagamentoRepository } from '../domain/repositories/pagamento.repository';
 import { Pagamento } from '../domain/model/pagamento';
-import { Pedido } from '../domain/model/pedido';
 
 export class PaymentUseCases {
   constructor(private readonly pagamentoRepository: PagamentoRepository) {}
@@ -17,8 +16,8 @@ export class PaymentUseCases {
     await this.pagamentoRepository.updateStatus(pagamento.id, pagamento);
   }
 
-  async getPagamento(pedido: Pedido): Promise<Pagamento> {
-    return await this.pagamentoRepository.getPagamentoByPedido(pedido);
+  async getPagamento(pedidoId: number): Promise<Pagamento> {
+    return await this.pagamentoRepository.getPagamentoByPedidoId(pedidoId);
   }
 
   async getPagamentoById(id: number): Promise<Pagamento> {

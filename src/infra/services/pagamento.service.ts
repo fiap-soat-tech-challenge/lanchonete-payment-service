@@ -9,7 +9,8 @@ export class PagamentoService {
     const response = await fetch(process.env.PAYMENT_URL, {
       method: 'POST',
       body: JSON.stringify({
-        valor: pagamento.pedido.precoTotal,
+        valor: pagamento.precoTotal,
+        pedidoId: pagamento.pedidoId,
         pagamentoId: pagamento.id,
       }),
       headers: { 'Content-Type': 'application/json' },

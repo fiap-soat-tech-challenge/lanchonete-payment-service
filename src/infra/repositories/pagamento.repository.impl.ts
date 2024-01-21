@@ -3,7 +3,6 @@ import { Pagamento } from '../../domain/model/pagamento';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PagamentoEntity } from '../entities/pagamento.entity';
-import { Pedido } from '../../domain/model/pedido';
 import { PagamentoConverter } from '../shared/pagamento.converter';
 
 export class PagamentoRepositoryImpl implements PagamentoRepository {
@@ -19,12 +18,14 @@ export class PagamentoRepositoryImpl implements PagamentoRepository {
     );
   }
 
-  async getPagamentoByPedido(pedido: Pedido): Promise<Pagamento | null> {
-    const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
-      pedido: { id: pedido.id },
-    });
-    if (pagamentoEntity === null) return null;
-    return PagamentoConverter.toPagamento(pagamentoEntity);
+  async getPagamentoByPedidoId(pedidoId: number): Promise<Pagamento | null> {
+    console.log(pedidoId);
+    return null;
+    // const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
+    //   pedido: { id: pedido.id },
+    // });
+    // if (pagamentoEntity === null) return null;
+    // return PagamentoConverter.toPagamento(pagamentoEntity);
   }
 
   async getPagamentoById(id: number): Promise<Pagamento | null> {
@@ -36,7 +37,9 @@ export class PagamentoRepositoryImpl implements PagamentoRepository {
   }
 
   async savePagamento(pagamento: Pagamento): Promise<Pagamento> {
-    const pagamentoByPedido = await this.getPagamentoByPedido(pagamento.pedido);
+    const pagamentoByPedido = await this.getPagamentoByPedidoId(
+      pagamento.pedidoId,
+    );
     if (pagamentoByPedido) {
       return pagamentoByPedido;
     }

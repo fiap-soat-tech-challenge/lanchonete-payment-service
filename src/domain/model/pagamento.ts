@@ -1,32 +1,43 @@
-import { Pedido } from './pedido';
 import { StatusPagamento } from './status-pagamento';
 
 export class Pagamento {
   private readonly _id: number | null;
-  private readonly _pedido: Pedido;
+  private readonly _pedidoId: number;
+  private readonly _precoTotal: number;
   private _status: StatusPagamento;
 
-  constructor(pedido: Pedido);
+  constructor(pedidoId: number, precoTotal: number);
 
-  constructor(id: number, pedido: Pedido, status: StatusPagamento);
+  constructor(
+    id: number,
+    pedidoId: number,
+    precoTotal: number,
+    status: StatusPagamento,
+  );
 
   public constructor(...params: any[]) {
-    if (params.length === 1) {
-      this._pedido = params[0];
+    if (params.length === 2) {
+      this._pedidoId = params[0];
+      this._precoTotal = params[1];
       this._status = StatusPagamento.PENDENTE;
       return;
     }
     this._id = params[0];
-    this._pedido = params[1];
-    this._status = params[2];
+    this._pedidoId = params[1];
+    this._precoTotal = params[2];
+    this._status = params[3];
   }
 
   get id(): number | null {
     return this._id;
   }
 
-  get pedido(): Pedido {
-    return this._pedido;
+  get pedidoId(): number {
+    return this._pedidoId;
+  }
+
+  get precoTotal(): number {
+    return this._precoTotal;
   }
 
   get status(): StatusPagamento {

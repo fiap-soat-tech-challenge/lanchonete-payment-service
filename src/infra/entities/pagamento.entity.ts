@@ -1,21 +1,16 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { StatusPagamento } from '../../domain/model/status-pagamento';
-import { PedidoEntity } from './pedido.entity';
 
 @Entity({ name: 'pagamentos' })
 export class PagamentoEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => PedidoEntity, { eager: true })
-  @JoinColumn()
-  pedido: PedidoEntity;
+  @Column({ unique: true })
+  pedidoId: number;
+
+  @Column()
+  precoTotal: number;
 
   @Column({
     type: 'enum',
@@ -24,8 +19,9 @@ export class PagamentoEntity {
   })
   status: StatusPagamento;
 
-  constructor(pedido: PedidoEntity, status: StatusPagamento) {
-    this.pedido = pedido;
+  constructor(pedidoId: number, precoTotal: number, status: StatusPagamento) {
+    this.pedidoId = pedidoId;
+    this.precoTotal = precoTotal;
     this.status = status;
   }
 }
