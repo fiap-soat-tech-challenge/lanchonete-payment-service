@@ -4,21 +4,21 @@ import { Pagamento } from '../../../../domain/model/pagamento';
 
 export class PagamentoStatusPresenter {
   @ApiProperty()
-  readonly pedidoId: number;
+  readonly pagamentoId: number;
 
   @ApiProperty()
-  readonly codigoPedido: number;
+  readonly pedidoId: number;
 
   @ApiProperty()
   readonly valorTotal: number;
 
-  @ApiProperty()
+  @ApiProperty({ enum: StatusPagamento })
   readonly status: StatusPagamento;
 
   constructor(pedidoId: number, pagamento: Pagamento) {
+    this.pagamentoId = pagamento.id;
     this.pedidoId = pedidoId;
-    // this.codigoPedido = pagamento.pedido.codigoPedido;
-    // this.valorTotal = pagamento.pedido.precoTotal / 100;
+    this.valorTotal = pagamento.precoTotal / 100;
     this.status = pagamento.status;
   }
 }

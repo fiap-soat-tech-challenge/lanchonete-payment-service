@@ -8,7 +8,9 @@ export class PagamentoStatusDto {
   @IsNumber({}, { message: 'O Id do pagamento é inválido' })
   readonly pagamentoId: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: StatusPagamento,
+  })
   @IsEnum(StatusPagamento, { message: 'O status do pagamento não é válido' })
   readonly status: StatusPagamento;
 }
