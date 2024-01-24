@@ -1,10 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ObjectIdColumn, ObjectId } from 'typeorm';
 import { StatusPagamento } from '../../domain/model/status-pagamento';
 
 @Entity({ name: 'pagamentos' })
 export class PagamentoEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @ObjectIdColumn()
+  id: ObjectId;
 
   @Column({ unique: true })
   pedidoId: number;

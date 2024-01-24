@@ -1,7 +1,7 @@
 import { StatusPagamento } from './status-pagamento';
 
 export class Pagamento {
-  private readonly _id: number | null;
+  private readonly _id: string | null;
   private readonly _pedidoId: number;
   private readonly _precoTotal: number;
   private _status: StatusPagamento;
@@ -9,7 +9,7 @@ export class Pagamento {
   constructor(pedidoId: number, precoTotal: number);
 
   constructor(
-    id: number,
+    id: string,
     pedidoId: number,
     precoTotal: number,
     status: StatusPagamento,
@@ -28,7 +28,7 @@ export class Pagamento {
     this._status = params[3];
   }
 
-  get id(): number | null {
+  get id(): string | null {
     return this._id;
   }
 

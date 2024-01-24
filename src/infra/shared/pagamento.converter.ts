@@ -3,12 +3,8 @@ import { Pagamento } from '../../domain/model/pagamento';
 
 export class PagamentoConverter {
   public static toPagamento(entity: PagamentoEntity): Pagamento {
-    return new Pagamento(
-      entity.id,
-      entity.pedidoId,
-      entity.precoTotal,
-      entity.status,
-    );
+    const id = entity.id.toString();
+    return new Pagamento(id, entity.pedidoId, entity.precoTotal, entity.status);
   }
 
   public static toEntity(pagamento: Pagamento): PagamentoEntity {

@@ -41,8 +41,10 @@ export class PagamentosController {
   @ApiExcludeEndpoint()
   @Post('novo')
   async criar(@Body() pedidoDto: PedidoDto): Promise<void> {
-    console.log(pedidoDto);
-    // TODO: Implementar
+    const pagamento = new Pagamento(pedidoDto.id, pedidoDto.precoTotal);
+    await this.paymentUseCasesUseCaseProxy
+      .getInstance()
+      .addPagamento(pagamento);
   }
 
   @ApiOperation({
@@ -60,7 +62,6 @@ export class PagamentosController {
   async pagar(
     @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoQrcodePresenter> {
-    // TODO: Implementar
     console.log(pedidoId);
     return null;
     // const pedido = await this.getPedido(pagamentoQrcodeDto.pedidoId);
@@ -104,18 +105,9 @@ export class PagamentosController {
   async status(
     @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoStatusPresenter> {
-    const pedido = await this.getPedido(pedidoId);
     const pagamento = await this.paymentUseCasesUseCaseProxy
       .getInstance()
       .getPagamento(pedidoId);
-    return new PagamentoStatusPresenter(pedido.id, pagamento);
-  }
-
-  private async getPedido(pedidoId: number): Promise<any> {
-    console.log(pedidoId);
-    return null;
-    // return await this.pedidoUseCasesUseCaseProxy
-    //   .getInstance()
-    //   .getPedidoById(pedidoId);
+    return new PagamentoStatusPresenter(pagamento);
   }
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from '../../../domain/config/database.interface';
-import { rethrow } from '@nestjs/core/helpers/rethrow';
 
 @Injectable()
 export class EnvironmentService implements DatabaseConfig {
@@ -29,10 +28,6 @@ export class EnvironmentService implements DatabaseConfig {
 
   getDatabaseName(): string {
     return this.configService.get<string>('DB_NAME');
-  }
-
-  getDatabaseSchema(): string {
-    return this.configService.get<string>('DB_SCHEMA');
   }
 
   getDatabaseSync(): boolean {

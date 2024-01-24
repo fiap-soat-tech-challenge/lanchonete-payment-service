@@ -7,22 +7,16 @@ export const getTypeOrmModuleOptions = (
   envie: EnvironmentService,
 ): TypeOrmModuleOptions =>
   ({
-    type: 'postgres',
+    type: 'mongodb',
     useUTC: false,
     host: envie.getDatabaseHost(),
     port: envie.getDatabasePort(),
     username: envie.getDatabaseUser(),
     password: envie.getDatabasePassword(),
     database: envie.getDatabaseName(),
-    schema: envie.getDatabaseSchema(),
+    authSource: 'admin',
     synchronize: envie.getDatabaseSync(),
     entities: [__dirname + './../../**/*.entity{.ts,.js}'],
-    migrationsRun: true,
-    migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-    cli: {
-      migrationsDir: 'src/data/migrations',
-    },
-    ssl: envie.getUseSslDatabase(),
   }) as TypeOrmModuleOptions;
 
 @Module({

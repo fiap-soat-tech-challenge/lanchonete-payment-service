@@ -1,7 +1,7 @@
 import { PagamentoRepository } from '../../domain/repositories/pagamento.repository';
 import { Pagamento } from '../../domain/model/pagamento';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ObjectId, Repository } from 'typeorm';
 import { PagamentoEntity } from '../entities/pagamento.entity';
 import { PagamentoConverter } from '../shared/pagamento.converter';
 
@@ -11,7 +11,7 @@ export class PagamentoRepositoryImpl implements PagamentoRepository {
     private readonly pagamentoEntityRepository: Repository<PagamentoEntity>,
   ) {}
 
-  async updateStatus(pagamentoId: number, pagamento: Pagamento): Promise<void> {
+  async updateStatus(pagamentoId: string, pagamento: Pagamento): Promise<void> {
     await this.pagamentoEntityRepository.update(
       pagamentoId,
       PagamentoConverter.toEntity(pagamento),
@@ -19,18 +19,16 @@ export class PagamentoRepositoryImpl implements PagamentoRepository {
   }
 
   async getPagamentoByPedidoId(pedidoId: number): Promise<Pagamento | null> {
-    console.log(pedidoId);
-    return null;
-    // const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
-    //   pedido: { id: pedido.id },
-    // });
-    // if (pagamentoEntity === null) return null;
-    // return PagamentoConverter.toPagamento(pagamentoEntity);
+    const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
+      pedidoId: pedidoId,
+    });
+    if (pagamentoEntity === null) return null;
+    return PagamentoConverter.toPagamento(pagamentoEntity);
   }
 
-  async getPagamentoById(id: number): Promise<Pagamento | null> {
+  async getPagamentoById(id: string): Promise<Pagamento | null> {
     const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
-      id: id,
+      id: new ObjectId(id),
     });
     if (pagamentoEntity === null) return null;
     return PagamentoConverter.toPagamento(pagamentoEntity);

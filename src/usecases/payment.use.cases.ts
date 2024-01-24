@@ -6,7 +6,7 @@ export class PaymentUseCases {
   constructor(private readonly pagamentoRepository: PagamentoRepository) {}
 
   async updateStatus(
-    pagamentoId: number,
+    pagamentoId: string,
     status: StatusPagamento,
   ): Promise<void> {
     const pagamento =
@@ -20,7 +20,7 @@ export class PaymentUseCases {
     return await this.pagamentoRepository.getPagamentoByPedidoId(pedidoId);
   }
 
-  async getPagamentoById(id: number): Promise<Pagamento> {
+  async getPagamentoById(id: string): Promise<Pagamento> {
     return await this.pagamentoRepository.getPagamentoById(id);
   }
 
