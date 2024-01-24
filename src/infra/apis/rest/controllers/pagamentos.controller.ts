@@ -9,12 +9,12 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth, ApiCreatedResponse,
+  ApiBearerAuth, ApiCreatedResponse, ApiExcludeEndpoint,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { PagamentoStatusDto } from '../dtos/pagamento.status.dto';
 import { PagamentoQrcodeDto } from '../dtos/pagamento.qrcode.dto';
@@ -38,14 +38,7 @@ export class PagamentosController {
     private pagamentoService: PagamentoService,
   ) {}
 
-  @ApiOperation({
-    summary: 'Criar novo pagamento',
-    description: 'Cria um novo pagamento para um pedido realizado',
-  })
-  @ApiCreatedResponse({ description: 'Pagamento criado com sucesso' })
-  @ApiBadRequestResponse({
-    description: 'Dados inválidos ou incorretos',
-  })
+  @ApiExcludeEndpoint()
   @Post('novo')
   async criar(@Body() pedidoDto: PedidoDto): Promise<void> {
     console.log(pedidoDto);
