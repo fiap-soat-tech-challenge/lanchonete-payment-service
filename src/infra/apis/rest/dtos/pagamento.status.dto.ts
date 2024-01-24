@@ -1,11 +1,11 @@
 import { StatusPagamento } from '../../../../domain/model/status-pagamento';
-import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PagamentoStatusDto {
   @ApiProperty()
   @IsNotEmpty({ message: 'O Id do pagamento é obrigatório' })
-  @IsNumber({}, { message: 'O Id do pagamento é inválido' })
+  @IsString({ message: 'O Id do pagamento é inválido' })
   readonly pagamentoId: string;
 
   @ApiProperty({

@@ -1,10 +1,11 @@
-import { Column, Entity, ObjectIdColumn, ObjectId } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { StatusPagamento } from '../../domain/model/status-pagamento';
+import { ObjectId } from 'mongodb';
 
 @Entity({ name: 'pagamentos' })
 export class PagamentoEntity {
   @ObjectIdColumn()
-  id: ObjectId;
+  _id: ObjectId;
 
   @Column({ unique: true })
   pedidoId: number;
@@ -23,5 +24,9 @@ export class PagamentoEntity {
     this.pedidoId = pedidoId;
     this.precoTotal = precoTotal;
     this.status = status;
+  }
+
+  get id(): ObjectId {
+    return this._id;
   }
 }

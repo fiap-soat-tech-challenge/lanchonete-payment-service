@@ -1,9 +1,10 @@
 import { PagamentoRepository } from '../../domain/repositories/pagamento.repository';
 import { Pagamento } from '../../domain/model/pagamento';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectId, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PagamentoEntity } from '../entities/pagamento.entity';
 import { PagamentoConverter } from '../shared/pagamento.converter';
+import { ObjectId } from 'mongodb';
 
 export class PagamentoRepositoryImpl implements PagamentoRepository {
   constructor(
@@ -28,7 +29,7 @@ export class PagamentoRepositoryImpl implements PagamentoRepository {
 
   async getPagamentoById(id: string): Promise<Pagamento | null> {
     const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
-      id: new ObjectId(id),
+      _id: new ObjectId(id),
     });
     if (pagamentoEntity === null) return null;
     return PagamentoConverter.toPagamento(pagamentoEntity);

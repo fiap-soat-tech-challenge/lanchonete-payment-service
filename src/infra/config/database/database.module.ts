@@ -17,6 +17,7 @@ export const getTypeOrmModuleOptions = (
     authSource: 'admin',
     synchronize: envie.getDatabaseSync(),
     entities: [__dirname + './../../**/*.entity{.ts,.js}'],
+    logging: 'all',
   }) as TypeOrmModuleOptions;
 
 @Module({

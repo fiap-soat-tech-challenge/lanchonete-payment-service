@@ -62,14 +62,11 @@ export class PagamentosController {
   async pagar(
     @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoQrcodePresenter> {
-    console.log(pedidoId);
-    return null;
-    // const pedido = await this.getPedido(pagamentoQrcodeDto.pedidoId);
-    // const pagamento = await this.paymentUseCasesUseCaseProxy
-    //   .getInstance()
-    //   .addPagamento(new Pagamento(pedido));
-    //
-    // return this.pagamentoService.generateCode(pagamento);
+    const pagamento = await this.paymentUseCasesUseCaseProxy
+      .getInstance()
+      .getPagamento(pedidoId);
+
+    return this.pagamentoService.generateCode(pagamento);
   }
 
   @ApiOperation({
