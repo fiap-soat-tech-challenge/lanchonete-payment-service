@@ -3,8 +3,8 @@ import { Pagamento } from '../../domain/model/pagamento';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PagamentoEntity } from '../entities/pagamento.entity';
-import { Pedido } from '../../domain/model/pedido';
 import { PagamentoConverter } from '../shared/pagamento.converter';
+import { ObjectId } from 'mongodb';
 
 export class PagamentoRepositoryImpl implements PagamentoRepository {
   constructor(
@@ -12,31 +12,33 @@ export class PagamentoRepositoryImpl implements PagamentoRepository {
     private readonly pagamentoEntityRepository: Repository<PagamentoEntity>,
   ) {}
 
-  async updateStatus(pagamentoId: number, pagamento: Pagamento): Promise<void> {
+  async updateStatus(pagamentoId: string, pagamento: Pagamento): Promise<void> {
     await this.pagamentoEntityRepository.update(
       pagamentoId,
       PagamentoConverter.toEntity(pagamento),
     );
   }
 
-  async getPagamentoByPedido(pedido: Pedido): Promise<Pagamento | null> {
+  async getPagamentoByPedidoId(pedidoId: number): Promise<Pagamento | null> {
     const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
-      pedido: { id: pedido.id },
+      pedidoId: pedidoId,
     });
     if (pagamentoEntity === null) return null;
     return PagamentoConverter.toPagamento(pagamentoEntity);
   }
 
-  async getPagamentoById(id: number): Promise<Pagamento | null> {
+  async getPagamentoById(id: string): Promise<Pagamento | null> {
     const pagamentoEntity = await this.pagamentoEntityRepository.findOneBy({
-      id: id,
+      _id: new ObjectId(id),
     });
     if (pagamentoEntity === null) return null;
     return PagamentoConverter.toPagamento(pagamentoEntity);
   }
 
   async savePagamento(pagamento: Pagamento): Promise<Pagamento> {
-    const pagamentoByPedido = await this.getPagamentoByPedido(pagamento.pedido);
+    const pagamentoByPedido = await this.getPagamentoByPedidoId(
+      pagamento.pedidoId,
+    );
     if (pagamentoByPedido) {
       return pagamentoByPedido;
     }

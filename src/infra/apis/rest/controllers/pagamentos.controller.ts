@@ -10,6 +10,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiExcludeEndpoint,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -17,16 +18,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PagamentoStatusDto } from '../dtos/pagamento.status.dto';
-import { PagamentoQrcodeDto } from '../dtos/pagamento.qrcode.dto';
 import { UseCasesProxyModule } from '../../../usecases-proxy/use-cases-proxy.module';
 import { UseCaseProxy } from '../../../usecases-proxy/use-case-proxy';
-import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
 import { PagamentoQrcodePresenter } from '../presenters/pagamento.qrcode.presenter';
 import { PagamentoStatusPresenter } from '../presenters/pagamento.status.presenter';
-import { Pedido } from '../../../../domain/model/pedido';
 import { PaymentUseCases } from '../../../../usecases/payment.use.cases';
 import { Pagamento } from '../../../../domain/model/pagamento';
 import { PagamentoService } from '../../../services/pagamento.service';
+import { PedidoDto } from '../dtos/pedido.dto';
 
 @ApiTags('Pagamentos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
@@ -34,30 +33,38 @@ import { PagamentoService } from '../../../services/pagamento.service';
 @Controller('/api/pagamentos')
 export class PagamentosController {
   constructor(
-    @Inject(UseCasesProxyModule.PEDIDO_USECASES_PROXY)
-    private pedidoUseCasesUseCaseProxy: UseCaseProxy<PedidoUseCases>,
     @Inject(UseCasesProxyModule.PAGAMENTO_USECASES_PROXY)
     private paymentUseCasesUseCaseProxy: UseCaseProxy<PaymentUseCases>,
     private pagamentoService: PagamentoService,
   ) {}
+
+  @ApiExcludeEndpoint()
+  @Post('novo')
+  async criar(@Body() pedidoDto: PedidoDto): Promise<void> {
+    const pagamento = new Pagamento(pedidoDto.id, pedidoDto.precoTotal);
+    await this.paymentUseCasesUseCaseProxy
+      .getInstance()
+      .addPagamento(pagamento);
+  }
+
   @ApiOperation({
     summary: 'Gera o QR Code de pagamento',
     description: 'Gera o QR Code de pagamento no gateway de pagamento',
   })
   @ApiOkResponse({
     type: PagamentoQrcodePresenter,
+    description: 'QR Code gerado com sucesso',
   })
   @ApiBadRequestResponse({
     description: 'Dados inválidos ou incorretos',
   })
-  @Post('qrcode')
+  @Post('qrcode/:pedidoId')
   async pagar(
-    @Body() pagamentoQrcodeDto: PagamentoQrcodeDto,
+    @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoQrcodePresenter> {
-    const pedido = await this.getPedido(pagamentoQrcodeDto.pedidoId);
     const pagamento = await this.paymentUseCasesUseCaseProxy
       .getInstance()
-      .addPagamento(new Pagamento(pedido));
+      .getPagamento(pedidoId);
 
     return this.pagamentoService.generateCode(pagamento);
   }
@@ -67,7 +74,9 @@ export class PagamentosController {
     description:
       'Processa o status de pagamento e do pedido do serviço externo',
   })
-  @ApiOkResponse()
+  @ApiOkResponse({
+    description: 'Pagamento processado com sucesso',
+  })
   @ApiBadRequestResponse({
     description: 'Dados inválidos ou incorretos',
   })
@@ -93,16 +102,9 @@ export class PagamentosController {
   async status(
     @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoStatusPresenter> {
-    const pedido = await this.getPedido(pedidoId);
     const pagamento = await this.paymentUseCasesUseCaseProxy
       .getInstance()
-      .getPagamento(pedido);
-    return new PagamentoStatusPresenter(pedido.id, pagamento);
-  }
-
-  private async getPedido(pedidoId: number): Promise<Pedido> {
-    return await this.pedidoUseCasesUseCaseProxy
-      .getInstance()
-      .getPedidoById(pedidoId);
+      .getPagamento(pedidoId);
+    return new PagamentoStatusPresenter(pagamento);
   }
 }

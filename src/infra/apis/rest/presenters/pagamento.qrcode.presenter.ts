@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class PagamentoQrcodePresenter {
   @ApiProperty()
-  readonly id: number;
+  readonly pagamentoId: string;
 
   @ApiProperty()
   readonly qrcode: string;
@@ -10,9 +10,9 @@ export class PagamentoQrcodePresenter {
   @ApiProperty()
   readonly valor: number;
 
-  public constructor(id: number, qrcode: string, valor: number) {
-    this.id = id;
+  public constructor(id: string, qrcode: string, valor: number) {
+    this.pagamentoId = id;
     this.qrcode = qrcode;
-    this.valor = valor / 100;
+    this.valor = valor;
   }
 }

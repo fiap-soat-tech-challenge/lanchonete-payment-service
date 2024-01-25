@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from '../../../domain/config/database.interface';
-import { rethrow } from '@nestjs/core/helpers/rethrow';
 
 @Injectable()
 export class EnvironmentService implements DatabaseConfig {
@@ -31,15 +30,15 @@ export class EnvironmentService implements DatabaseConfig {
     return this.configService.get<string>('DB_NAME');
   }
 
-  getDatabaseSchema(): string {
-    return this.configService.get<string>('DB_SCHEMA');
-  }
-
   getDatabaseSync(): boolean {
     return this.getBoolean(this.configService.get<string>('DB_SYNCHRONIZE'));
   }
 
   getUseSslDatabase(): boolean {
     return this.getBoolean(this.configService.get<string>('DB_SSL'));
+  }
+
+  getProductionServiceUrl(): string {
+    return this.configService.get<string>('PRODUCTION_SERVICE_URL');
   }
 }
