@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth, ApiCreatedResponse, ApiExcludeEndpoint,
+  ApiBearerAuth,
+  ApiExcludeEndpoint,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -17,7 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PagamentoStatusDto } from '../dtos/pagamento.status.dto';
-import { PagamentoQrcodeDto } from '../dtos/pagamento.qrcode.dto';
 import { UseCasesProxyModule } from '../../../usecases-proxy/use-cases-proxy.module';
 import { UseCaseProxy } from '../../../usecases-proxy/use-case-proxy';
 import { PagamentoQrcodePresenter } from '../presenters/pagamento.qrcode.presenter';

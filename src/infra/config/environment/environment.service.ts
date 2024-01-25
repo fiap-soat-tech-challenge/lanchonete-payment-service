@@ -37,4 +37,8 @@ export class EnvironmentService implements DatabaseConfig {
   getUseSslDatabase(): boolean {
     return this.getBoolean(this.configService.get<string>('DB_SSL'));
   }
+
+  getProductionServiceUrl(): string {
+    return this.configService.get<string>('PRODUCTION_SERVICE_URL');
+  }
 }

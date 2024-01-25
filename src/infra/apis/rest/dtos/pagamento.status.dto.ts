@@ -1,5 +1,5 @@
 import { StatusPagamento } from '../../../../domain/model/status-pagamento';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PagamentoStatusDto {

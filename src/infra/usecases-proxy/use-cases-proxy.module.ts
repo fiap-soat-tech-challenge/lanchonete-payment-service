@@ -3,9 +3,11 @@ import { RepositoriesModule } from '../repositories/repositories.module';
 import { UseCaseProxy } from './use-case-proxy';
 import { PagamentoRepositoryImpl } from '../repositories/pagamento.repository.impl';
 import { PaymentUseCases } from '../../usecases/payment.use.cases';
+import { ServicesModule } from '../services/services.module';
+import { ProductionServiceImpl } from '../services/production.service.impl';
 
 @Module({
-  imports: [RepositoriesModule],
+  imports: [RepositoriesModule, ServicesModule],
 })
 export class UseCasesProxyModule {
   static PAGAMENTO_USECASES_PROXY = 'pagamentoUseCasesProxy';
@@ -15,10 +17,15 @@ export class UseCasesProxyModule {
       module: UseCasesProxyModule,
       providers: [
         {
-          inject: [PagamentoRepositoryImpl],
+          inject: [PagamentoRepositoryImpl, ProductionServiceImpl],
           provide: UseCasesProxyModule.PAGAMENTO_USECASES_PROXY,
-          useFactory: (pagamentoRepository: PagamentoRepositoryImpl) =>
-            new UseCaseProxy(new PaymentUseCases(pagamentoRepository)),
+          useFactory: (
+            pagamentoRepository: PagamentoRepositoryImpl,
+            productionService: ProductionServiceImpl,
+          ) =>
+            new UseCaseProxy(
+              new PaymentUseCases(pagamentoRepository, productionService),
+            ),
         },
       ],
       exports: [UseCasesProxyModule.PAGAMENTO_USECASES_PROXY],
