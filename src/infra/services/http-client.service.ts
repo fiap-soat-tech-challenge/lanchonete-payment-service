@@ -3,10 +3,6 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 @Injectable()
 export class HttpClientService {
-  async get(url: string): Promise<AxiosResponse<any, any>> {
-    return await this.makeRequest('GET', url);
-  }
-
   async post(url: string, data: any): Promise<AxiosResponse<any, any>> {
     return await this.makeRequest('POST', url, data);
   }

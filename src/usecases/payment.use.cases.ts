@@ -28,10 +28,6 @@ export class PaymentUseCases {
     return await this.pagamentoRepository.getPagamentoByPedidoId(pedidoId);
   }
 
-  async getPagamentoById(id: string): Promise<Pagamento> {
-    return await this.pagamentoRepository.getPagamentoById(id);
-  }
-
   async addPagamento(pagamento: Pagamento): Promise<Pagamento> {
     return await this.pagamentoRepository.savePagamento(pagamento);
   }
