@@ -29,4 +29,8 @@ export class PagamentoEntity {
   get id(): ObjectId {
     return this._id;
   }
+
+  set id(id: ObjectId) {
+    this._id = id;
+  }
 }
