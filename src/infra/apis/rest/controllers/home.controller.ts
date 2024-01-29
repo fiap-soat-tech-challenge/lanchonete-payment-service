@@ -11,7 +11,7 @@ export class HomeController {
       message: 'Bem-vindo ao Payment Service Lanchonete!',
       docs: `${request.protocol}://${request.get('Host')}${
         request.originalUrl
-      }api/docs`,
+      }api/pagamentos/docs`,
     };
   }
 }
