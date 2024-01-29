@@ -2,6 +2,7 @@ import { StatusPagamento } from '../domain/model/status-pagamento';
 import { PagamentoRepository } from '../domain/repositories/pagamento.repository';
 import { Pagamento } from '../domain/model/pagamento';
 import { ProductionService } from '../domain/services/production.service';
+import { NotFoundException } from '../domain/exceptions/not-found.exception';
 
 export class PaymentUseCases {
   constructor(
@@ -25,7 +26,14 @@ export class PaymentUseCases {
   }
 
   async getPagamento(pedidoId: number): Promise<Pagamento> {
-    return await this.pagamentoRepository.getPagamentoByPedidoId(pedidoId);
+    const pagamento =
+      await this.pagamentoRepository.getPagamentoByPedidoId(pedidoId);
+    if (pagamento === null) {
+      throw new NotFoundException(
+        'O Id do pedido fornecido não foi encontrado',
+      );
+    }
+    return pagamento;
   }
 
   async addPagamento(pagamento: Pagamento): Promise<Pagamento> {
