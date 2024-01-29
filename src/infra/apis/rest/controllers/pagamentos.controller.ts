@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -18,8 +10,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PagamentoStatusDto } from '../dtos/pagamento.status.dto';
-import { UseCasesProxyModule } from '../../../usecases-proxy/use-cases-proxy.module';
-import { UseCaseProxy } from '../../../usecases-proxy/use-case-proxy';
 import { PagamentoQrcodePresenter } from '../presenters/pagamento.qrcode.presenter';
 import { PagamentoStatusPresenter } from '../presenters/pagamento.status.presenter';
 import { PaymentUseCases } from '../../../../usecases/payment.use.cases';
@@ -33,8 +23,7 @@ import { PedidoDto } from '../dtos/pedido.dto';
 @Controller('/api/pagamentos')
 export class PagamentosController {
   constructor(
-    @Inject(UseCasesProxyModule.PAGAMENTO_USECASES_PROXY)
-    private paymentUseCasesUseCaseProxy: UseCaseProxy<PaymentUseCases>,
+    private paymentUseCases: PaymentUseCases,
     private pagamentoService: PagamentoService,
   ) {}
 
@@ -42,9 +31,7 @@ export class PagamentosController {
   @Post('novo')
   async criar(@Body() pedidoDto: PedidoDto): Promise<void> {
     const pagamento = new Pagamento(pedidoDto.id, pedidoDto.precoTotal);
-    await this.paymentUseCasesUseCaseProxy
-      .getInstance()
-      .addPagamento(pagamento);
+    await this.paymentUseCases.addPagamento(pagamento);
   }
 
   @ApiOperation({
@@ -62,9 +49,7 @@ export class PagamentosController {
   async pagar(
     @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoQrcodePresenter> {
-    const pagamento = await this.paymentUseCasesUseCaseProxy
-      .getInstance()
-      .getPagamento(pedidoId);
+    const pagamento = await this.paymentUseCases.getPagamento(pedidoId);
 
     return this.pagamentoService.generateCode(pagamento);
   }
@@ -82,9 +67,10 @@ export class PagamentosController {
   })
   @Put('processar')
   async processar(@Body() pagamentoDto: PagamentoStatusDto): Promise<void> {
-    await this.paymentUseCasesUseCaseProxy
-      .getInstance()
-      .updateStatus(pagamentoDto.pagamentoId, pagamentoDto.status);
+    await this.paymentUseCases.updateStatus(
+      pagamentoDto.pagamentoId,
+      pagamentoDto.status,
+    );
   }
 
   @ApiOperation({
@@ -102,9 +88,7 @@ export class PagamentosController {
   async status(
     @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoStatusPresenter> {
-    const pagamento = await this.paymentUseCasesUseCaseProxy
-      .getInstance()
-      .getPagamento(pedidoId);
+    const pagamento = await this.paymentUseCases.getPagamento(pedidoId);
     return new PagamentoStatusPresenter(pagamento);
   }
 }

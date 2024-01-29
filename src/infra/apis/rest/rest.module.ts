@@ -5,7 +5,7 @@ import { PagamentosController } from './controllers/pagamentos.controller';
 import { PagamentoService } from '../../services/pagamento.service';
 
 @Module({
-  imports: [UseCasesProxyModule.register()],
+  imports: [UseCasesProxyModule],
   providers: [PagamentoService],
   controllers: [HomeController, PagamentosController],
 })
