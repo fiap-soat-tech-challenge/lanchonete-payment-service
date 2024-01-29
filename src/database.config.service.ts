@@ -18,15 +18,11 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
 
     return {
       type: 'mongodb',
-      host: this.configService.get('DB_HOST'),
-      port: this.configService.get('DB_PORT'),
-      username: this.configService.get('DB_USER'),
-      password: this.configService.get('DB_PASSWORD'),
-      database: this.configService.get('DB_NAME'),
+      url: this.configService.get('DB_URL'),
       authSource: 'admin',
+      database: this.configService.get('DB_NAME'),
       synchronize: this.boolean(this.configService.get('DB_SYNCHRONIZE')),
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      ssl: this.boolean(this.configService.get('DB_SSL')),
     };
   }
 
