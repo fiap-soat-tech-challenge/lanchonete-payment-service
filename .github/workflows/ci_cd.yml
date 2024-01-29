@@ -10,7 +10,7 @@ env:
   ECR_REPOSITORY: "lanchonete-payment-service"
   ECS_CLUSTER: "lanchonete-cluster"
   ECS_SERVICE: "payment-service"
-  ECS_TASK: "payment-task"
+  ECS_TASK: "payment-service-task"
 
 jobs:
   build:
