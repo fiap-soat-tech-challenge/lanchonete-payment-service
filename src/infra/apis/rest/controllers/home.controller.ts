@@ -3,7 +3,7 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { Request } from 'express';
 
 @ApiExcludeController()
-@Controller('/')
+@Controller('/api/payments')
 export class HomeController {
   @Get()
   home(@Req() request: Request): object {
@@ -11,7 +11,7 @@ export class HomeController {
       message: 'Bem-vindo ao Payment Service Lanchonete!',
       docs: `${request.protocol}://${request.get('Host')}${
         request.originalUrl
-      }api/pagamentos/docs`,
+      }api/payments/pagamentos/docs`,
     };
   }
 }
