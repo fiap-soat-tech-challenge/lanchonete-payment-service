@@ -15,7 +15,7 @@ export class ProductionServiceImpl implements ProductionService{
   async sendApprovedOrder(pagamento: Pagamento): Promise<void> {
     const serviceUrl = this.configService.get('PRODUCTION_SERVICE_URL');
     await this.httpClientService.post(
-      `${serviceUrl}/api/pedidos/novo`,
+      `${serviceUrl}/api/orders/pedidos/novo`,
       new PagamentoStatusPresenter(pagamento),
     );
   }
