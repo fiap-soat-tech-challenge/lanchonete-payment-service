@@ -44,7 +44,7 @@ describe('ProductionServiceImpl', () => {
 
       await productionService.sendApprovedOrder(mockPagamento);
 
-      const expectedUrl = 'https://production-service-url/api/pedidos/novo';
+      const expectedUrl = 'https://production-service-url/api/cozinha/pedidos/novo';
       const expectedPresenter = new PagamentoStatusPresenter(mockPagamento);
 
       expect(httpClientService.post).toHaveBeenCalledWith(

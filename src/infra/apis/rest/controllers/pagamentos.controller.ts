@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -22,6 +30,7 @@ import { PedidoDto } from '../dtos/pedido.dto';
 @ApiBearerAuth()
 @Controller('pagamentos')
 export class PagamentosController {
+  private readonly logger = new Logger(PagamentosController.name);
   constructor(
     private paymentUseCases: PaymentUseCases,
     private pagamentoService: PagamentoService,
@@ -31,6 +40,9 @@ export class PagamentosController {
   @Post('novo')
   async criar(@Body() pedidoDto: PedidoDto): Promise<void> {
     const pagamento = new Pagamento(pedidoDto.id, pedidoDto.precoTotal);
+    this.logger.log(
+      `[Novo] Criando pagamento para o pedido com Id [${pedidoDto.id}]`,
+    );
     await this.paymentUseCases.addPagamento(pagamento);
   }
 
@@ -50,7 +62,9 @@ export class PagamentosController {
     @Param('pedidoId') pedidoId: number,
   ): Promise<PagamentoQrcodePresenter> {
     const pagamento = await this.paymentUseCases.getPagamento(pedidoId);
-
+    this.logger.log(
+      `[QR Code] Gerando QR Code para pedido [${pagamento.pedidoId}] com pagamento Id [${pagamento.id}]`,
+    );
     return this.pagamentoService.generateCode(pagamento);
   }
 
@@ -67,6 +81,9 @@ export class PagamentosController {
   })
   @Put('processar')
   async processar(@Body() pagamentoDto: PagamentoStatusDto): Promise<void> {
+    this.logger.log(
+      `[Processar] Processando pagamento com Id [${pagamentoDto.pagamentoId}]`,
+    );
     await this.paymentUseCases.updateStatus(
       pagamentoDto.pagamentoId,
       pagamentoDto.status,
