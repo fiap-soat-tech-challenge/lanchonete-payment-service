@@ -5,5 +5,5 @@ export class PagamentoQrcodeDto {
   @ApiProperty()
   @IsNotEmpty({ message: 'O Id do pedido é obrigatório' })
   @IsNumber({}, { message: 'O Id do pedido é inválido' })
-  readonly pedidoId: number;
+  pedidoId: number;
 }

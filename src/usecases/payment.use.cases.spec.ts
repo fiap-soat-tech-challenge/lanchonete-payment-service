@@ -1,114 +1,115 @@
 import { PaymentUseCases } from './payment.use.cases';
-import { Pagamento } from '../domain/model/pagamento';
+import { PagamentoRepository } from '../domain/repositories/pagamento.repository';
+import { ProductionService } from '../domain/services/production.service';
 import { StatusPagamento } from '../domain/model/status-pagamento';
+import { Pagamento } from '../domain/model/pagamento';
+import { NotFoundException } from '../domain/exceptions/not-found.exception';
 
 describe('PaymentUseCases', () => {
+  let pagamentoRepository: jest.Mocked<PagamentoRepository>;
+  let productionService: jest.Mocked<ProductionService>;
   let paymentUseCases: PaymentUseCases;
-  let pagamentoRepositoryMock: {
-    getPagamentoById: jest.Mock;
-    updateStatus: jest.Mock;
-    getPagamentoByPedidoId: jest.Mock;
-    savePagamento: jest.Mock;
-  };
-  let productionServiceMock: {
-    sendApprovedOrder: jest.Mock;
-  };
 
-  beforeEach(() => {
-    pagamentoRepositoryMock = {
+  beforeEach(async () => {
+    pagamentoRepository = {
       getPagamentoById: jest.fn(),
       updateStatus: jest.fn(),
       getPagamentoByPedidoId: jest.fn(),
       savePagamento: jest.fn(),
-    };
-    productionServiceMock = {
+    } as jest.Mocked<PagamentoRepository>;
+
+    productionService = {
       sendApprovedOrder: jest.fn(),
-    };
+    } as jest.Mocked<ProductionService>;
+
     paymentUseCases = new PaymentUseCases(
-      pagamentoRepositoryMock as any,
-      productionServiceMock as any,
+      pagamentoRepository,
+      productionService,
     );
   });
 
-  it('should update status to approved and send order if status is pending', async () => {
-    const pagamentoId = '123';
-    const pedidoId = 1;
-    const pagamento = new Pagamento(
-      pagamentoId,
-      pedidoId,
-      100,
-      StatusPagamento.PENDENTE,
-    );
+  describe('updateStatus', () => {
+    it('should update status of pagamento successfully', async () => {
+      const mockPagamento = new Pagamento(
+        '1',
+        123,
+        50.0,
+        StatusPagamento.PENDENTE,
+      );
 
-    pagamentoRepositoryMock.getPagamentoById.mockResolvedValueOnce(pagamento);
+      jest
+        .spyOn(pagamentoRepository, 'getPagamentoById')
+        .mockResolvedValue(mockPagamento);
 
-    await paymentUseCases.updateStatus(pagamentoId, StatusPagamento.APROVADO);
+      await paymentUseCases.updateStatus('1', StatusPagamento.APROVADO);
 
-    expect(pagamentoRepositoryMock.getPagamentoById).toHaveBeenCalledWith(
-      pagamentoId,
-    );
-    expect(pagamentoRepositoryMock.updateStatus).toHaveBeenCalledWith(
-      pagamentoId,
-      pagamento,
-    );
-    expect(productionServiceMock.sendApprovedOrder).toHaveBeenCalledWith(
-      pagamento,
-    );
+      expect(pagamentoRepository.getPagamentoById).toHaveBeenCalledWith('1');
+      expect(pagamentoRepository.updateStatus).toHaveBeenCalledWith(
+        '1',
+        mockPagamento,
+      );
+      expect(productionService.sendApprovedOrder).toHaveBeenCalledWith(
+        mockPagamento,
+      );
+    });
+
+    it('should not update status if pagamento is already approved', async () => {
+      const mockPagamento = new Pagamento(
+        '1',
+        123,
+        50.0,
+        StatusPagamento.APROVADO,
+      );
+
+      jest
+        .spyOn(pagamentoRepository, 'getPagamentoById')
+        .mockResolvedValue(mockPagamento);
+      jest.spyOn(pagamentoRepository, 'updateStatus');
+      jest.spyOn(productionService, 'sendApprovedOrder');
+
+      await paymentUseCases.updateStatus('1', StatusPagamento.APROVADO);
+
+      expect(pagamentoRepository.getPagamentoById).toHaveBeenCalledWith('1');
+      expect(pagamentoRepository.updateStatus).not.toHaveBeenCalled();
+      expect(productionService.sendApprovedOrder).not.toHaveBeenCalled();
+    });
   });
 
-  it('should not update status if already approved', async () => {
-    const pagamentoId = '123';
-    const pedidoId = 1;
-    const pagamento = new Pagamento(
-      pagamentoId,
-      pedidoId,
-      100,
-      StatusPagamento.APROVADO,
-    );
+  describe('getPagamento', () => {
+    it('should get pagamento by pedidoId successfully', async () => {
+      const mockPagamento = new Pagamento(123, 50.0);
 
-    pagamentoRepositoryMock.getPagamentoById.mockResolvedValueOnce(pagamento);
+      jest
+        .spyOn(pagamentoRepository, 'getPagamentoByPedidoId')
+        .mockResolvedValue(mockPagamento);
 
-    await paymentUseCases.updateStatus(pagamentoId, StatusPagamento.APROVADO);
+      const result = await paymentUseCases.getPagamento(123);
 
-    expect(pagamentoRepositoryMock.getPagamentoById).toHaveBeenCalledWith(
-      pagamentoId,
-    );
-    expect(pagamentoRepositoryMock.updateStatus).not.toHaveBeenCalled();
-    expect(productionServiceMock.sendApprovedOrder).not.toHaveBeenCalled();
+      expect(result).toEqual(mockPagamento);
+    });
+
+    it('should throw NotFoundException if pagamento is not found', async () => {
+      jest
+        .spyOn(pagamentoRepository, 'getPagamentoByPedidoId')
+        .mockResolvedValue(null);
+
+      await expect(paymentUseCases.getPagamento(123)).rejects.toThrowError(
+        NotFoundException,
+      );
+    });
   });
 
-  it('should get pagamento by pedidoId', async () => {
-    const pedidoId = 1;
-    const pagamento = new Pagamento(
-      '123',
-      pedidoId,
-      100,
-      StatusPagamento.PENDENTE,
-    );
+  describe('addPagamento', () => {
+    it('should add pagamento successfully', async () => {
+      const mockPagamento = new Pagamento(123, 50.0);
 
-    pagamentoRepositoryMock.getPagamentoByPedidoId.mockResolvedValueOnce(
-      pagamento,
-    );
+      jest
+        .spyOn(pagamentoRepository, 'savePagamento')
+        .mockResolvedValue(mockPagamento);
 
-    const result = await paymentUseCases.getPagamento(pedidoId);
+      const result = await paymentUseCases.addPagamento(mockPagamento);
 
-    expect(pagamentoRepositoryMock.getPagamentoByPedidoId).toHaveBeenCalledWith(
-      pedidoId,
-    );
-    expect(result).toEqual(pagamento);
-  });
-
-  it('should add pagamento', async () => {
-    const pagamento = new Pagamento(1, 100);
-
-    pagamentoRepositoryMock.getPagamentoByPedidoId.mockResolvedValueOnce(null);
-    pagamentoRepositoryMock.savePagamento.mockResolvedValueOnce(pagamento);
-
-    const result = await paymentUseCases.addPagamento(pagamento);
-
-    expect(pagamentoRepositoryMock.savePagamento).toHaveBeenCalledWith(
-      pagamento,
-    );
-    expect(result).toEqual(pagamento);
+      expect(result).toEqual(mockPagamento);
+    });
   });
 });

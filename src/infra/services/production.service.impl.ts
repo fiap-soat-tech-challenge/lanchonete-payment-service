@@ -6,7 +6,7 @@ import { ProductionService } from '../../domain/services/production.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class ProductionServiceImpl implements ProductionService{
+export class ProductionServiceImpl implements ProductionService {
   constructor(
     private readonly httpClientService: HttpClientService,
     private readonly configService: ConfigService,
@@ -15,7 +15,7 @@ export class ProductionServiceImpl implements ProductionService{
   async sendApprovedOrder(pagamento: Pagamento): Promise<void> {
     const serviceUrl = this.configService.get('PRODUCTION_SERVICE_URL');
     await this.httpClientService.post(
-      `${serviceUrl}/api/orders/pedidos/novo`,
+      `${serviceUrl}/api/pedidos/novo`,
       new PagamentoStatusPresenter(pagamento),
     );
   }

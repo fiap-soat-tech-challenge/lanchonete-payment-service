@@ -20,7 +20,7 @@ import { PedidoDto } from '../dtos/pedido.dto';
 @ApiTags('Pagamentos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
 @ApiBearerAuth()
-@Controller('/api/payments/pagamentos')
+@Controller('pagamentos')
 export class PagamentosController {
   constructor(
     private paymentUseCases: PaymentUseCases,
