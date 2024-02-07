@@ -6,16 +6,16 @@ import { ProductionService } from '../../domain/services/production.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class ProductionServiceImpl implements ProductionService{
+export class ProductionServiceImpl implements ProductionService {
   constructor(
     private readonly httpClientService: HttpClientService,
     private readonly configService: ConfigService,
   ) {}
 
   async sendApprovedOrder(pagamento: Pagamento): Promise<void> {
-    const serviceUrl = 'https://to01e3flj1.execute-api.us-east-2.amazonaws.com/api/production/pedidos/novo';
-    const response = await this.httpClientService.post(
-      serviceUrl,
+    const serviceUrl = this.configService.get('PRODUCTION_SERVICE_URL');
+    await this.httpClientService.post(
+      `${serviceUrl}/api/pedidos/novo`,
       new PagamentoStatusPresenter(pagamento),
     );
   }
