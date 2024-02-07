@@ -4,7 +4,7 @@ import { PagamentoEntity } from '../entities/pagamento.entity';
 import { PagamentoRepositoryImpl } from './pagamento.repository.impl';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PagamentoEntity]), RepositoriesModule],
+  imports: [TypeOrmModule.forFeature([PagamentoEntity])],
   exports: [PagamentoRepositoryImpl],
   providers: [PagamentoRepositoryImpl],
 })
