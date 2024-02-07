@@ -21,7 +21,7 @@ describe('ProductionServiceImpl', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn().mockReturnValue('http://production-service-url'),
+            get: jest.fn().mockReturnValue('https://production-service-url'),
           },
         },
       ],
@@ -44,7 +44,7 @@ describe('ProductionServiceImpl', () => {
 
       await productionService.sendApprovedOrder(mockPagamento);
 
-      const expectedUrl = 'http://production-service-url/api/pedidos/novo';
+      const expectedUrl = 'https://production-service-url/api/pedidos/novo';
       const expectedPresenter = new PagamentoStatusPresenter(mockPagamento);
 
       expect(httpClientService.post).toHaveBeenCalledWith(
