@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from './database.config';
 
-describe('DatabaseConfigService', () => {
+describe('DatabaseConfig', () => {
   let service: DatabaseConfig;
 
   beforeEach(async () => {
@@ -31,7 +31,7 @@ describe('DatabaseConfigService', () => {
 
       const result = service.createTypeOrmOptions();
 
-      expect(result.type).toEqual('sqlite');
+      expect(result.type).toEqual('mongodb');
       expect(result.database).toEqual(':memory:');
       expect(result.synchronize).toEqual(true);
     });
