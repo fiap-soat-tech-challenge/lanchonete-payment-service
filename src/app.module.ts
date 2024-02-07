@@ -6,7 +6,7 @@ import { ServicesModule } from './infra/services/services.module';
 import { HealthModule } from './infra/health/health.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseConfigService } from './database.config.service';
+import { DatabaseConfig } from './infra/database/database.config';
 
 @Module({
   imports: [
@@ -14,14 +14,13 @@ import { DatabaseConfigService } from './database.config.service';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      useClass: DatabaseConfigService,
+      useClass: DatabaseConfig,
     }),
     RestModule,
     RepositoriesModule,
     UseCasesProxyModule,
-    ServicesModule,
     HealthModule,
   ],
-  providers: [DatabaseConfigService],
+  providers: [DatabaseConfig],
 })
 export class AppModule {}

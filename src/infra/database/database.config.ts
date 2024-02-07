@@ -3,13 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
 @Injectable()
-export class DatabaseConfigService implements TypeOrmOptionsFactory {
+export class DatabaseConfig implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     if (process.env.NODE_ENV === 'test') {
       return {
-        type: 'sqlite',
+        type: 'mongodb',
         database: ':memory:',
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
