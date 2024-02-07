@@ -33,6 +33,10 @@ describe('PagamentoRepositoryImpl', () => {
     );
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(pagamentoRepository).toBeDefined();
   });
@@ -137,53 +141,53 @@ describe('PagamentoRepositoryImpl', () => {
     });
   });
 
-  // describe('savePagamento', () => {
-  //   it('should save payment if not exists for the given pedidoId', async () => {
-  //     const mockPagamento = new Pagamento(
-  //       null,
-  //       123,
-  //       100.0,
-  //       StatusPagamento.PENDENTE,
-  //     );
-  //     const mockPagamentoEntityToInsert =
-  //       PagamentoConverter.toEntity(mockPagamento);
-  //
-  //     mockPagamentoEntityRepository.findOneBy.mockResolvedValue(null);
-  //
-  //     mockPagamentoEntityRepository.save.mockResolvedValue(
-  //       mockPagamentoEntityToInsert,
-  //     );
-  //
-  //     const result = await pagamentoRepository.savePagamento(mockPagamento);
-  //
-  //     expect(mockPagamentoEntityRepository.save).toHaveBeenCalledWith(
-  //       mockPagamentoEntityToInsert,
-  //     );
-  //     expect(result).toEqual(
-  //       PagamentoConverter.toPagamento(mockPagamentoEntityToInsert),
-  //     );
-  //   });
-  //
-  //   it('should return existing payment if already exists for the given pedidoId', async () => {
-  //     const mockPagamento = new Pagamento(
-  //       null,
-  //       123,
-  //       100.0,
-  //       StatusPagamento.PENDENTE,
-  //     );
-  //
-  //     mockPagamentoEntityRepository.findOneBy.mockResolvedValue(
-  //       PagamentoConverter.toEntity(mockPagamento),
-  //     );
-  //
-  //     const result = await pagamentoRepository.savePagamento(mockPagamento);
-  //
-  //     const expectedPagamento = PagamentoConverter.toPagamento(
-  //       PagamentoConverter.toEntity(mockPagamento),
-  //     );
-  //
-  //     expect(result).toEqual(expectedPagamento);
-  //     expect(mockPagamentoEntityRepository.save).not.toHaveBeenCalled();
-  //   });
-  // });
+  describe('savePagamento', () => {
+    it('should save payment if not exists for the given pedidoId', async () => {
+      const mockPagamento = new Pagamento(
+        null,
+        123,
+        100.0,
+        StatusPagamento.PENDENTE,
+      );
+      const mockPagamentoEntityToInsert =
+        PagamentoConverter.toEntity(mockPagamento);
+      mockPagamentoEntityToInsert.id = new ObjectId();
+
+      mockPagamentoEntityRepository.findOneBy.mockResolvedValue(null);
+
+      mockPagamentoEntityRepository.save.mockResolvedValue(
+        mockPagamentoEntityToInsert,
+      );
+
+      const result = await pagamentoRepository.savePagamento(mockPagamento);
+
+      expect(result).toEqual(
+        PagamentoConverter.toPagamento(mockPagamentoEntityToInsert),
+      );
+    });
+
+    it('should return existing payment if already exists for the given pedidoId', async () => {
+      const mockPagamento = new Pagamento(
+        null,
+        123,
+        100.0,
+        StatusPagamento.PENDENTE,
+      );
+
+      const mockPagamentoEntity = PagamentoConverter.toEntity(mockPagamento);
+      mockPagamentoEntity.id = new ObjectId();
+
+      mockPagamentoEntityRepository.findOneBy.mockResolvedValue(
+        mockPagamentoEntity,
+      );
+
+      const result = await pagamentoRepository.savePagamento(mockPagamento);
+
+      const expectedPagamento =
+        PagamentoConverter.toPagamento(mockPagamentoEntity);
+
+      expect(result).toEqual(expectedPagamento);
+      expect(mockPagamentoEntityRepository.save).not.toHaveBeenCalled();
+    });
+  });
 });
