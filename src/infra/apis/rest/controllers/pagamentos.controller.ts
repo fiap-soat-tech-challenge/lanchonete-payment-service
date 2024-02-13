@@ -10,7 +10,6 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiExcludeEndpoint,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -24,6 +23,7 @@ import { PaymentUseCases } from '../../../../usecases/payment.use.cases';
 import { Pagamento } from '../../../../domain/model/pagamento';
 import { PagamentoService } from '../../../services/pagamento.service';
 import { PedidoDto } from '../dtos/pedido.dto';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @ApiTags('Pagamentos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
@@ -36,9 +36,8 @@ export class PagamentosController {
     private pagamentoService: PagamentoService,
   ) {}
 
-  @ApiExcludeEndpoint()
-  @Post('novo')
-  async criar(@Body() pedidoDto: PedidoDto): Promise<void> {
+  @MessagePattern('order_created')
+  async criar(@Payload() pedidoDto: PedidoDto): Promise<void> {
     const pagamento = new Pagamento(pedidoDto.id, pedidoDto.precoTotal);
     this.logger.log(
       `[Novo] Criando pagamento para o pedido com Id [${pedidoDto.id}]`,

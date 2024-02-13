@@ -42,7 +42,7 @@ describe('ProductionServiceImpl', () => {
         StatusPagamento.PENDENTE,
       );
 
-      await productionService.sendApprovedOrder(mockPagamento);
+      await productionService.sendApprovedPayment(mockPagamento);
 
       const expectedUrl = 'https://production-service-url/api/cozinha/pedidos/novo';
       const expectedPresenter = new PagamentoStatusPresenter(mockPagamento);
