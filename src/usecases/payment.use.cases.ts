@@ -21,7 +21,7 @@ export class PaymentUseCases {
     await this.pagamentoRepository.updateStatus(pagamento.id, pagamento);
 
     if (status === StatusPagamento.APROVADO) {
-      await this.productionService.sendApprovedOrder(pagamento);
+      await this.productionService.sendApprovedPayment(pagamento);
     }
   }
 

@@ -19,7 +19,7 @@ describe('PaymentUseCases', () => {
     } as jest.Mocked<PagamentoRepository>;
 
     productionService = {
-      sendApprovedOrder: jest.fn(),
+      sendApprovedPayment: jest.fn(),
     } as jest.Mocked<ProductionService>;
 
     paymentUseCases = new PaymentUseCases(
@@ -48,7 +48,7 @@ describe('PaymentUseCases', () => {
         '1',
         mockPagamento,
       );
-      expect(productionService.sendApprovedOrder).toHaveBeenCalledWith(
+      expect(productionService.sendApprovedPayment).toHaveBeenCalledWith(
         mockPagamento,
       );
     });
@@ -65,13 +65,13 @@ describe('PaymentUseCases', () => {
         .spyOn(pagamentoRepository, 'getPagamentoById')
         .mockResolvedValue(mockPagamento);
       jest.spyOn(pagamentoRepository, 'updateStatus');
-      jest.spyOn(productionService, 'sendApprovedOrder');
+      jest.spyOn(productionService, 'sendApprovedPayment');
 
       await paymentUseCases.updateStatus('1', StatusPagamento.APROVADO);
 
       expect(pagamentoRepository.getPagamentoById).toHaveBeenCalledWith('1');
       expect(pagamentoRepository.updateStatus).not.toHaveBeenCalled();
-      expect(productionService.sendApprovedOrder).not.toHaveBeenCalled();
+      expect(productionService.sendApprovedPayment).not.toHaveBeenCalled();
     });
   });
 
