@@ -1,40 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductionServiceImpl } from './production.service.impl';
-import { HttpClientService } from './http-client.service';
 import { Pagamento } from '../../domain/model/pagamento';
 import { PagamentoStatusPresenter } from '../apis/rest/presenters/pagamento.status.presenter';
-import { ConfigService } from '@nestjs/config';
 import { StatusPagamento } from '../../domain/model/status-pagamento';
+import { ClientProxy } from '@nestjs/microservices';
 
-jest.mock('./http-client.service');
-jest.mock('@nestjs/config');
+class MockClientProxy {
+  emit(pattern: string, data: any): void {
+    console.log(pattern, data);
+  }
+}
 
 describe('ProductionServiceImpl', () => {
-  let productionService: ProductionServiceImpl;
-  let httpClientService: HttpClientService;
+  let service: ProductionServiceImpl;
+  let clientProxy: ClientProxy;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProductionServiceImpl,
-        HttpClientService,
         {
-          provide: ConfigService,
-          useValue: {
-            get: jest.fn().mockReturnValue('https://production-service-url'),
-          },
+          provide: 'APPROVED_PAYMENTS_QUEUE_CLIENT',
+          useClass: MockClientProxy,
         },
       ],
     }).compile();
 
-    productionService = module.get<ProductionServiceImpl>(
-      ProductionServiceImpl,
-    );
-    httpClientService = module.get<HttpClientService>(HttpClientService);
+    service = module.get<ProductionServiceImpl>(ProductionServiceImpl);
+    clientProxy = module.get<ClientProxy>('APPROVED_PAYMENTS_QUEUE_CLIENT');
   });
 
-  describe('sendApprovedOrder', () => {
-    it('should send approved order to production service', async () => {
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('sendOrderToPayment', () => {
+    it('should send order to payment queue', async () => {
       const mockPagamento = new Pagamento(
         '1',
         123,
@@ -42,14 +43,13 @@ describe('ProductionServiceImpl', () => {
         StatusPagamento.PENDENTE,
       );
 
-      await productionService.sendApprovedPayment(mockPagamento);
+      const emitSpy = jest.spyOn(clientProxy, 'emit');
 
-      const expectedUrl = 'https://production-service-url/api/cozinha/pedidos/novo';
-      const expectedPresenter = new PagamentoStatusPresenter(mockPagamento);
+      await service.sendApprovedPayment(mockPagamento);
 
-      expect(httpClientService.post).toHaveBeenCalledWith(
-        expectedUrl,
-        expectedPresenter,
+      expect(emitSpy).toHaveBeenCalledWith(
+        'approved_payment',
+        new PagamentoStatusPresenter(mockPagamento),
       );
     });
   });
