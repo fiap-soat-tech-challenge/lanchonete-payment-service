@@ -12,7 +12,7 @@ export const configureQueueConsumers = async (
   const host = configService.get('QUEUE_HOST');
   const port = configService.get('QUEUE_PORT');
 
-  const queues = ['pedidos_para_pagamentos'];
+  const queues = ['pedidos_para_pagamento'];
 
   for (const queue of queues) {
     app.connectMicroservice({

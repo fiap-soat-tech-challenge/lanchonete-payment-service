@@ -26,7 +26,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api/pagamentos/docs', app, document);
 
-  await configureQueueConsumers(app);
+  // await configureQueueConsumers(app);
   await app.startAllMicroservices();
   await app.listen(3003);
 }
