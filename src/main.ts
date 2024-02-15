@@ -4,7 +4,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { RestExceptionFilter } from './infra/apis/rest/exceptions/rest-exception.filter';
-import { configureQueueConsumers } from './app.consumers';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,8 +25,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api/pagamentos/docs', app, document);
 
-  // await configureQueueConsumers(app);
-  await app.startAllMicroservices();
   await app.listen(3003);
 }
 bootstrap();
