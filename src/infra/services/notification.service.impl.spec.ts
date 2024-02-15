@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductionServiceImpl } from './production.service.impl';
-import { Pagamento } from '../../domain/model/pagamento';
-import { PagamentoStatusPresenter } from '../apis/rest/presenters/pagamento.status.presenter';
-import { StatusPagamento } from '../../domain/model/status-pagamento';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { NotificationServiceImpl } from './notification.service.impl';
+import { Pagamento } from '../../domain/model/pagamento';
+import { StatusPagamento } from '../../domain/model/status-pagamento';
+import { PagamentoStatusPresenter } from '../apis/rest/presenters/pagamento.status.presenter';
 
 class MockAmqpConnection {
   async publish(
@@ -15,19 +15,19 @@ class MockAmqpConnection {
   }
 }
 
-describe('ProductionServiceImpl', () => {
-  let service: ProductionServiceImpl;
+describe('NotificationServiceImpl', () => {
+  let service: NotificationServiceImpl;
   let amqpConnection: AmqpConnection;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ProductionServiceImpl,
+        NotificationServiceImpl,
         { provide: AmqpConnection, useClass: MockAmqpConnection },
       ],
     }).compile();
 
-    service = module.get<ProductionServiceImpl>(ProductionServiceImpl);
+    service = module.get<NotificationServiceImpl>(NotificationServiceImpl);
     amqpConnection = module.get<AmqpConnection>(AmqpConnection);
   });
 
@@ -42,14 +42,14 @@ describe('ProductionServiceImpl', () => {
     expect(service).toBeDefined();
   });
 
-  describe('sendOrderToPayment', () => {
-    it('should send order to payment queue', async () => {
+  describe('sendDeclinedPaymentNotification', () => {
+    it('should send payment to notification queue', async () => {
       const publishSpy = jest.spyOn(amqpConnection, 'publish');
 
-      await service.sendApprovedPayment(mockPagamento);
+      await service.sendDeclinedPaymentNotification(mockPagamento);
 
       expect(publishSpy).toHaveBeenCalledWith(
-        'pagamento_aprovado',
+        'pagamento_recusado',
         '',
         new PagamentoStatusPresenter(mockPagamento),
       );

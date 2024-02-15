@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule } from '@nestjs/microservices';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ApprovedPaymentsClientFactory } from './approved-payments-client.factory';
 
 @Module({
   imports: [
-    ClientsModule.registerAsync({
-      isGlobal: true,
-      clients: [
-        {
-          name: 'APPROVED_PAYMENTS_QUEUE_CLIENT',
-          useClass: ApprovedPaymentsClientFactory,
-        },
-      ],
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      useClass: ApprovedPaymentsClientFactory,
     }),
+    QueuesModule,
   ],
-  exports: [ClientsModule],
+  exports: [RabbitMQModule],
 })
 export class QueuesModule {}

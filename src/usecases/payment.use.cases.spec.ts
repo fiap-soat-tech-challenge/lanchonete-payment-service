@@ -4,10 +4,12 @@ import { ProductionService } from '../domain/services/production.service';
 import { StatusPagamento } from '../domain/model/status-pagamento';
 import { Pagamento } from '../domain/model/pagamento';
 import { NotFoundException } from '../domain/exceptions/not-found.exception';
+import { NotificationService } from '../domain/services/notification.service';
 
 describe('PaymentUseCases', () => {
   let pagamentoRepository: jest.Mocked<PagamentoRepository>;
   let productionService: jest.Mocked<ProductionService>;
+  let notificationService: jest.Mocked<NotificationService>;
   let paymentUseCases: PaymentUseCases;
 
   beforeEach(async () => {
@@ -22,9 +24,14 @@ describe('PaymentUseCases', () => {
       sendApprovedPayment: jest.fn(),
     } as jest.Mocked<ProductionService>;
 
+    notificationService = {
+      sendDeclinedPaymentNotification: jest.fn(),
+    } as jest.Mocked<NotificationService>;
+
     paymentUseCases = new PaymentUseCases(
       pagamentoRepository,
       productionService,
+      notificationService,
     );
   });
 
@@ -51,6 +58,30 @@ describe('PaymentUseCases', () => {
       expect(productionService.sendApprovedPayment).toHaveBeenCalledWith(
         mockPagamento,
       );
+    });
+
+    it('should update status of pagamento refused', async () => {
+      const mockPagamento = new Pagamento(
+        '1',
+        123,
+        50.0,
+        StatusPagamento.PENDENTE,
+      );
+
+      jest
+        .spyOn(pagamentoRepository, 'getPagamentoById')
+        .mockResolvedValue(mockPagamento);
+
+      await paymentUseCases.updateStatus('1', StatusPagamento.RECUSADO);
+
+      expect(pagamentoRepository.getPagamentoById).toHaveBeenCalledWith('1');
+      expect(pagamentoRepository.updateStatus).toHaveBeenCalledWith(
+        '1',
+        mockPagamento,
+      );
+      expect(
+        notificationService.sendDeclinedPaymentNotification,
+      ).toHaveBeenCalledWith(mockPagamento);
     });
 
     it('should not update status if pagamento is already approved', async () => {

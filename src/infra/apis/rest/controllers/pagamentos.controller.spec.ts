@@ -5,7 +5,6 @@ import { PagamentoService } from '../../../services/pagamento.service';
 import { PagamentoStatusDto } from '../dtos/pagamento.status.dto';
 import { PagamentoQrcodePresenter } from '../presenters/pagamento.qrcode.presenter';
 import { PagamentoStatusPresenter } from '../presenters/pagamento.status.presenter';
-import { PedidoDto } from '../dtos/pedido.dto';
 import { Pagamento } from '../../../../domain/model/pagamento';
 import { StatusPagamento } from '../../../../domain/model/status-pagamento';
 
@@ -41,18 +40,6 @@ describe('PagamentosController', () => {
       module.get<PagamentosController>(PagamentosController);
     paymentUseCases = module.get<PaymentUseCases>(PaymentUseCases);
     pagamentoService = module.get<PagamentoService>(PagamentoService);
-  });
-
-  describe('criar', () => {
-    it('deve criar um novo pagamento', async () => {
-      const pedidoDto: PedidoDto = { id: 1, precoTotal: 100 };
-
-      await pagamentosController.criar(pedidoDto);
-
-      expect(paymentUseCases.addPagamento).toHaveBeenCalledWith(
-        new Pagamento(pedidoDto.id, pedidoDto.precoTotal),
-      );
-    });
   });
 
   describe('pagar', () => {

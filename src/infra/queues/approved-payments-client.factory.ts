@@ -1,29 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import { ClientsModuleOptionsFactory, Transport } from '@nestjs/microservices';
-import { ClientProvider } from '@nestjs/microservices/module/interfaces/clients-module.interface';
 import { ConfigService } from '@nestjs/config';
+import { ModuleConfigFactory } from '@golevelup/nestjs-modules/lib/dynamicModules';
+import { RabbitMQConfig } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class ApprovedPaymentsClientFactory
-  implements ClientsModuleOptionsFactory
+  implements ModuleConfigFactory<RabbitMQConfig>
 {
   constructor(private configService: ConfigService) {}
 
-  createClientOptions(): Promise<ClientProvider> | ClientProvider {
+  createModuleConfig(): Promise<RabbitMQConfig> | RabbitMQConfig {
     const user = this.configService.get('QUEUE_USER');
     const password = this.configService.get('QUEUE_PASSWORD');
     const host = this.configService.get('QUEUE_HOST');
     const port = this.configService.get('QUEUE_PORT');
 
     return {
-      transport: Transport.RMQ,
-      options: {
-        urls: [`amqp://${user}:${password}@${host}:${port}`],
-        queue: 'pagamentos_aprovados',
-        queueOptions: {
-          durable: true,
+      name: 'RabbitMQ Server',
+      uri: `amqp://${user}:${password}@${host}:${port}`,
+      exchanges: [
+        {
+          name: 'pagamento_aprovado',
+          type: 'fanout',
         },
-      },
+        {
+          name: 'pagamento_recusado',
+          type: 'fanout',
+        },
+      ],
+      queues: [
+        {
+          name: 'pedidos_para_pagamento',
+          options: {
+            durable: true,
+          },
+        },
+        {
+          name: 'pagamentos_aprovados',
+          options: {
+            durable: true,
+          },
+          exchange: 'pagamento_aprovado',
+          routingKey: '',
+        },
+        {
+          name: 'notificacoes_pagamentos',
+          options: {
+            durable: true,
+          },
+          exchange: 'pagamento_aprovado',
+          routingKey: '',
+        },
+        {
+          name: 'notificacoes_pagamentos',
+          options: {
+            durable: true,
+          },
+          exchange: 'pagamento_recusado',
+          routingKey: '',
+        },
+      ],
     };
   }
 }

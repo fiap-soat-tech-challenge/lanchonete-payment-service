@@ -3,11 +3,13 @@ import { PagamentoRepository } from '../domain/repositories/pagamento.repository
 import { Pagamento } from '../domain/model/pagamento';
 import { ProductionService } from '../domain/services/production.service';
 import { NotFoundException } from '../domain/exceptions/not-found.exception';
+import { NotificationService } from '../domain/services/notification.service';
 
 export class PaymentUseCases {
   constructor(
     private readonly pagamentoRepository: PagamentoRepository,
     private readonly productionService: ProductionService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async updateStatus(
@@ -16,12 +18,20 @@ export class PaymentUseCases {
   ): Promise<void> {
     const pagamento =
       await this.pagamentoRepository.getPagamentoById(pagamentoId);
-    if (pagamento.status === StatusPagamento.APROVADO) return;
+    if (pagamento.status !== StatusPagamento.PENDENTE) return;
+
     pagamento.status = status;
     await this.pagamentoRepository.updateStatus(pagamento.id, pagamento);
 
-    if (status === StatusPagamento.APROVADO) {
-      await this.productionService.sendApprovedPayment(pagamento);
+    switch (status) {
+      case StatusPagamento.APROVADO:
+        await this.productionService.sendApprovedPayment(pagamento);
+        break;
+      case StatusPagamento.RECUSADO:
+        await this.notificationService.sendDeclinedPaymentNotification(
+          pagamento,
+        );
+        break;
     }
   }
 
