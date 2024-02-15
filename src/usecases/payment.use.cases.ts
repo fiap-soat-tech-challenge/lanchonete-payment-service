@@ -3,11 +3,13 @@ import { PagamentoRepository } from '../domain/repositories/pagamento.repository
 import { Pagamento } from '../domain/model/pagamento';
 import { ProductionService } from '../domain/services/production.service';
 import { NotFoundException } from '../domain/exceptions/not-found.exception';
+import { NotificationService } from '../domain/services/notification.service';
 
 export class PaymentUseCases {
   constructor(
     private readonly pagamentoRepository: PagamentoRepository,
     private readonly productionService: ProductionService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async updateStatus(
@@ -26,7 +28,9 @@ export class PaymentUseCases {
         await this.productionService.sendApprovedPayment(pagamento);
         break;
       case StatusPagamento.RECUSADO:
-        await this.productionService.sendRefusedPayment(pagamento);
+        await this.notificationService.sendDeclinedPaymentNotification(
+          pagamento,
+        );
         break;
     }
   }
