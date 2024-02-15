@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { Transport } from '@nestjs/microservices';
-import { mock, instance, when } from 'ts-mockito';
+import { instance, mock, when } from 'ts-mockito';
 import { ApprovedPaymentsClientFactory } from './approved-payments-client.factory';
 
 describe('ApprovedPaymentsClientFactory', () => {
@@ -42,19 +41,36 @@ describe('ApprovedPaymentsClientFactory', () => {
 
   describe('createClientOptions', () => {
     it('should create client options', async () => {
-      const clientOptions = await factory.createClientOptions();
+      const result = await factory.createModuleConfig();
 
-      expect(clientOptions).toEqual({
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            `amqp://${process.env.QUEUE_USER}:${process.env.QUEUE_PASSWORD}@${process.env.QUEUE_HOST}:${process.env.QUEUE_PORT}`,
-          ],
-          queue: 'pagamentos_aprovados',
-          queueOptions: {
-            durable: true,
+      expect(result).toEqual({
+        name: 'RabbitMQ Server',
+        uri: `amqp://${process.env.QUEUE_USER}:${process.env.QUEUE_PASSWORD}@${process.env.QUEUE_HOST}:${process.env.QUEUE_PORT}`,
+        exchanges: [
+          { name: 'pagamento_aprovado', type: 'fanout' },
+          { name: 'pagamento_recusado', type: 'fanout' },
+        ],
+        queues: [
+          { name: 'pedidos_para_pagamento', options: { durable: true } },
+          {
+            name: 'pagamentos_aprovados',
+            options: { durable: true },
+            exchange: 'pagamento_aprovado',
+            routingKey: '',
           },
-        },
+          {
+            name: 'notificacoes_pagamentos',
+            options: { durable: true },
+            exchange: 'pagamento_aprovado',
+            routingKey: '',
+          },
+          {
+            name: 'notificacoes_pagamentos',
+            options: { durable: true },
+            exchange: 'pagamento_recusado',
+            routingKey: '',
+          },
+        ],
       });
     });
   });
