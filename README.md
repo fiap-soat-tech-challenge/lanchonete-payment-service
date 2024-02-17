@@ -136,6 +136,10 @@ necessário gerar dois relatórios para cada endpoint.
 
 ![Confirmação do Pagamento Imagem 2](zap-reports/zap-confirmacao-pagamento-2.png)
 
+## Relatório RIPD do sistema
+
+Link para o relatório RIPD do sistema: **[Relatório RIPD](https://docs.google.com/document/d/1hBpNQ4Gs5mKzRf0FAM85vzqWiXM7idFJF5sMvlN9cy0/preview)**.
+
 ## Diagrama da Arquitetura
 
 ![Diagrama da Arquitetura](https://github.com/fiap-soat-tech-challenge/terraform-lanchonete-app/blob/main/docs/imagens/infra_aws_app.png)
