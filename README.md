@@ -116,8 +116,22 @@ evento disparar e qual evento deve ouvir para que a saga seja completa.
 
 ## Zap Scanning Reports
 
+Os relatórios de segurança do ZAP Scanning estão disponíveis no diretório `zap-reports` na raiz do projeto. Como os
+são HTML, não é possível visualizá-los diretamente no GitHub. Para visualizá-los, faça o clone do repositório e abra
+os arquivos HTML em um navegador.
+
+Importante: Como os relatórios não tiveram nenhum alerta, resolvemos disponibilizar imagens da execução do ZAP Scanning
+para constatar que o mesmo foi executado como deveria. E como não houve alerta com risco **High** então não foi 
+necessário gerar dois relatórios para cada endpoint.
+
 ### Geração do Pagamento
 
+![Geração do Pagamento Imagem 1](zap-reports/zap-geracao-pagamento-1.png)
+
+![Geração do Pagamento Imagem 2](zap-reports/zap-geracao-pagamento-2.png)
 
 ### Confirmação do Pagamento
 
+![Confirmação do Pagamento Imagem 1](zap-reports/zap-confirmacao-pagamento-1.png)
+
+![Confirmação do Pagamento Imagem 2](zap-reports/zap-confirmacao-pagamento-2.png)
