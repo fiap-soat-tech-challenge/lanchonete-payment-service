@@ -135,3 +135,7 @@ necessário gerar dois relatórios para cada endpoint.
 ![Confirmação do Pagamento Imagem 1](zap-reports/zap-confirmacao-pagamento-1.png)
 
 ![Confirmação do Pagamento Imagem 2](zap-reports/zap-confirmacao-pagamento-2.png)
+
+## Diagrama da Arquitetura
+
+![Diagrama da Arquitetura](https://github.com/fiap-soat-tech-challenge/terraform-lanchonete-app/blob/main/docs/imagens/infra_aws_app.png)
