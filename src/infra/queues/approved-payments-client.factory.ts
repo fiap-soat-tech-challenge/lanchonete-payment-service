@@ -9,7 +9,7 @@ export class ApprovedPaymentsClientFactory
 {
   constructor(private configService: ConfigService) {}
 
-  getUri() {
+  _getUri() {
     const user = this.configService.get('QUEUE_USER');
     const password = this.configService.get('QUEUE_PASSWORD');
     const uri = this.configService.get('QUEUE_URI');
@@ -27,7 +27,7 @@ export class ApprovedPaymentsClientFactory
   createModuleConfig(): Promise<RabbitMQConfig> | RabbitMQConfig {
     return {
       name: 'RabbitMQ Server',
-      uri: this.getUri(),
+      uri: this._getUri(),
       exchanges: [
         {
           name: 'pagamento_aprovado',
