@@ -25,7 +25,7 @@ import { PagamentoService } from '../../../services/pagamento.service';
 @ApiTags('Pagamentos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
 @ApiBearerAuth()
-@Controller('pagamentos')
+@Controller('/api/pagamentos')
 export class PagamentosController {
   private readonly logger = new Logger(PagamentosController.name);
   constructor(
