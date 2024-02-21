@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { instance, mock, when } from 'ts-mockito';
 import { ApprovedPaymentsClientFactory } from './approved-payments-client.factory';
+import * as process from 'process';
 
 describe('ApprovedPaymentsClientFactory', () => {
   let factory: ApprovedPaymentsClientFactory;
@@ -12,6 +13,7 @@ describe('ApprovedPaymentsClientFactory', () => {
     process.env.QUEUE_PASSWORD = 'password';
     process.env.QUEUE_HOST = 'localhost';
     process.env.QUEUE_PORT = '5672';
+    process.env.QUEUE_URI = 'amqp://localhost:5672';
 
     configService = mock(ConfigService);
     when(configService.get('QUEUE_USER')).thenReturn(process.env.QUEUE_USER);
@@ -22,6 +24,7 @@ describe('ApprovedPaymentsClientFactory', () => {
     when(configService.get('QUEUE_PORT')).thenReturn(
       parseInt(process.env.QUEUE_PORT),
     );
+    when(configService.get('QUEUE_URI')).thenReturn(process.env.QUEUE_URI);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -72,6 +75,17 @@ describe('ApprovedPaymentsClientFactory', () => {
           },
         ],
       });
+    });
+
+    it('should generate URI with user and password if URI is provided', () => {
+      const result = factory.getUri();
+
+      expect(result).toBe('amqp://user:password@localhost:5672');
+    });
+
+    it('should generate URI with user and password using default values if URI is not provided', () => {
+      const result = factory.getUri();
+      expect(result).toBe('amqp://user:password@localhost:5672');
     });
   });
 
