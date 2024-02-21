@@ -8,6 +8,38 @@ describe('ApprovedPaymentsClientFactory', () => {
   let factory: ApprovedPaymentsClientFactory;
   let configService: ConfigService;
 
+  function getExpectedResult() {
+    return {
+      name: 'RabbitMQ Server',
+      uri: `amqp://${process.env.QUEUE_USER}:${process.env.QUEUE_PASSWORD}@localhost:5672`,
+      exchanges: [
+        { name: 'pagamento_aprovado', type: 'fanout' },
+        { name: 'pagamento_recusado', type: 'fanout' },
+      ],
+      queues: [
+        { name: 'pedidos_para_pagamento', options: { durable: true } },
+        {
+          name: 'pagamentos_aprovados',
+          options: { durable: true },
+          exchange: 'pagamento_aprovado',
+          routingKey: '',
+        },
+        {
+          name: 'notificacoes_pagamentos',
+          options: { durable: true },
+          exchange: 'pagamento_aprovado',
+          routingKey: '',
+        },
+        {
+          name: 'notificacoes_pagamentos',
+          options: { durable: true },
+          exchange: 'pagamento_recusado',
+          routingKey: '',
+        },
+      ],
+    };
+  }
+
   beforeEach(async () => {
     configService = mock(ConfigService);
 
@@ -51,35 +83,7 @@ describe('ApprovedPaymentsClientFactory', () => {
 
       const result = await factory.createModuleConfig();
 
-      expect(result).toEqual({
-        name: 'RabbitMQ Server',
-        uri: `amqp://${process.env.QUEUE_USER}:${process.env.QUEUE_PASSWORD}@localhost:5672`,
-        exchanges: [
-          { name: 'pagamento_aprovado', type: 'fanout' },
-          { name: 'pagamento_recusado', type: 'fanout' },
-        ],
-        queues: [
-          { name: 'pedidos_para_pagamento', options: { durable: true } },
-          {
-            name: 'pagamentos_aprovados',
-            options: { durable: true },
-            exchange: 'pagamento_aprovado',
-            routingKey: '',
-          },
-          {
-            name: 'notificacoes_pagamentos',
-            options: { durable: true },
-            exchange: 'pagamento_aprovado',
-            routingKey: '',
-          },
-          {
-            name: 'notificacoes_pagamentos',
-            options: { durable: true },
-            exchange: 'pagamento_recusado',
-            routingKey: '',
-          },
-        ],
-      });
+      expect(result).toEqual(getExpectedResult());
     });
 
     it('should create client options false', async () => {
@@ -99,35 +103,7 @@ describe('ApprovedPaymentsClientFactory', () => {
 
       const result = await factory.createModuleConfig();
 
-      expect(result).toEqual({
-        name: 'RabbitMQ Server',
-        uri: `amqp://${process.env.QUEUE_USER}:${process.env.QUEUE_PASSWORD}@localhost:5672`,
-        exchanges: [
-          { name: 'pagamento_aprovado', type: 'fanout' },
-          { name: 'pagamento_recusado', type: 'fanout' },
-        ],
-        queues: [
-          { name: 'pedidos_para_pagamento', options: { durable: true } },
-          {
-            name: 'pagamentos_aprovados',
-            options: { durable: true },
-            exchange: 'pagamento_aprovado',
-            routingKey: '',
-          },
-          {
-            name: 'notificacoes_pagamentos',
-            options: { durable: true },
-            exchange: 'pagamento_aprovado',
-            routingKey: '',
-          },
-          {
-            name: 'notificacoes_pagamentos',
-            options: { durable: true },
-            exchange: 'pagamento_recusado',
-            routingKey: '',
-          },
-        ],
-      });
+      expect(result).toEqual(getExpectedResult());
     });
   });
 
