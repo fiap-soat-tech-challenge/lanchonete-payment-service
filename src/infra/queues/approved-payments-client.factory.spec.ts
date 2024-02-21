@@ -79,13 +79,16 @@ describe('ApprovedPaymentsClientFactory', () => {
 
     it('should generate URI with user and password if URI is provided', () => {
       const result = factory.getUri();
-
-      expect(result).toBe('amqp://user:password@localhost:5672');
+      expect(result).toBe(
+        `amqp://${process.env.QUEUE_USER}:${process.env.QUEUE_PASSWORD}@${process.env.QUEUE_HOST}:${process.env.QUEUE_PORT}`,
+      );
     });
 
     it('should generate URI with user and password using default values if URI is not provided', () => {
       const result = factory.getUri();
-      expect(result).toBe('amqp://user:password@localhost:5672');
+      expect(result).toBe(
+        `amqp://${process.env.QUEUE_USER}:${process.env.QUEUE_PASSWORD}@${process.env.QUEUE_HOST}:${process.env.QUEUE_PORT}`,
+      );
     });
   });
 
